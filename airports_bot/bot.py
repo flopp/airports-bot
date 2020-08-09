@@ -58,6 +58,9 @@ class Bot:
             tags.append(f"#{airport.iata_code()}")
         tags.append("#airport")
         tags.append("#randomairport")
+        tags.append("#aviation")
+        tags.append("#avgeek")
+        tags.append("#avgeeks")
         return (
             image_file,
             f"{airport.fancy_name()}, {airport.location()}\n"
