@@ -1,0 +1,6 @@
+appdirs
+click
+pycountry
+requests
+s2sphere
+tweepy
