@@ -81,6 +81,9 @@ class Airport:
     def icao_code(self) -> str:
         return self._icao_code
 
+    def iata_code(self) -> str:
+        return self._iata_code
+
     def matches_code(self, needle: str) -> bool:
         return needle in self._icao_code or needle in self._iata_code
 
@@ -89,6 +92,12 @@ class Airport:
         if self._iata_code != "":
             code = f"{code}/{self._iata_code}"
         return f"{code} - {self._name}"
+
+    def bounds(self) -> typing.Optional[LatLngRect]:
+        return self._bounds
+
+    def location(self) -> str:
+        return self._location
 
     @staticmethod
     def fancy_location(iso_country: str, city: str) -> str:

@@ -4,8 +4,8 @@ import os
 import typing
 
 import appdirs  # type: ignore
-from s2sphere import Angle, LatLng, LatLngRect
-import tweepy
+from s2sphere import Angle, LatLngRect  # type: ignore
+import tweepy  # type: ignore
 
 from airports_bot.db import DB
 from airports_bot.airport import Airport
@@ -35,10 +35,18 @@ class Bot:
     def create_image(self, airport: Airport) -> str:
         width = 640
         height = 640
-        assert airport._bounds
-        center = airport._bounds.get_center()
-        zoom = self.get_bounds_zoom(airport._bounds, width, height)
-        url = f"https://maps.googleapis.com/maps/api/staticmap?center={center.lat().degrees},{center.lng().degrees}&zoom={zoom}&size={width}x{height}&maptype=satellite&key={self._config['GOOGLE']['API_KEY']}"
+        bounds = airport.bounds()
+        assert bounds
+        center = bounds.get_center()
+        zoom = Bot.get_bounds_zoom(bounds, width, height)
+        url = (
+            "https://maps.googleapis.com/maps/api/staticmap"
+            + f"?center={center.lat().degrees},{center.lng().degrees}"
+            + f"&zoom={zoom}"
+            + f"&size={width}x{height}"
+            + "&maptype=satellite"
+            + f"&key={self._config['GOOGLE']['API_KEY']}"
+        )
         image_file = os.path.join(self._cache_dir, f"{airport.icao_code()}-{width}x{height}.png")
         download(url, image_file)
         return image_file
@@ -46,13 +54,15 @@ class Bot:
     def prepare_tweet(self, airport: Airport) -> typing.Tuple[str, str]:
         image_file = self.create_image(airport)
         tags = [f"#{airport.icao_code()}"]
-        if airport._iata_code != "":
-            tags.append(f"#{airport._iata_code}")
+        if airport.iata_code() != "":
+            tags.append(f"#{airport.iata_code()}")
         tags.append("#airport")
         tags.append("#randomairport")
         return (
             image_file,
-            f"{airport.fancy_name()}, {airport._location}\nhttps://airports.flopp.net/a/{airport.icao_code()}\n{' '.join(tags)}",
+            f"{airport.fancy_name()}, {airport.location()}\n"
+            + f"https://airports.flopp.net/a/{airport.icao_code()}\n"
+            + " ".join(tags),
         )
 
     def tweet(self, image_file: str, text: str) -> None:
@@ -65,16 +75,15 @@ class Bot:
     @staticmethod
     def _lat_rad(lat: Angle) -> float:
         sin = math.sin(lat.radians)
-        radX2 = math.log((1 + sin) / (1 - sin)) / 2
-        return max(min(radX2, math.pi), -math.pi) / 2
+        rad_x2 = math.log((1 + sin) / (1 - sin)) / 2
+        return max(min(rad_x2, math.pi), -math.pi) / 2
 
     @staticmethod
     def _zoom(size: int, fraction: float) -> int:
         return math.floor(math.log(size / 256.0 / fraction) / math.log(2))
 
-    def get_bounds_zoom(self, bounds: LatLngRect, width: int, height: int) -> int:
-        world_width = 256
-        world_height = 256
+    @staticmethod
+    def get_bounds_zoom(bounds: LatLngRect, width: int, height: int) -> int:
         max_zoom = 21
         lat_fraction = (Bot._lat_rad(bounds.lat_hi()) - Bot._lat_rad(bounds.lat_lo())) / math.pi
         lng_diff = bounds.lng_hi().degrees - bounds.lng_lo().degrees

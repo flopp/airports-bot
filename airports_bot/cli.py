@@ -24,7 +24,7 @@ def main(airport_code: typing.List[str], config: str, reset: bool, tweet: bool, 
         for code in airport_code:
             airport = bot.get_airport(code)
             if airport is None:
-                logging.warn("Cannot find airport matching '%s'", airport_code)
+                logging.warning("Cannot find airport matching '%s'", airport_code)
                 continue
             airports.append(airport)
     else:

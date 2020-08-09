@@ -25,15 +25,6 @@ class AirportsTable:
                     except IndexError as e:
                         logging.warning(repr(e))
 
-    def add_wikipedia(self, articles: typing.Dict[str, str]) -> None:
-        logging.info("adding wikipedia articles")
-        count = 0
-        for icao_code, airport in self._items.items():
-            if icao_code in articles:
-                if airport.update_wikipedia(articles[icao_code]):
-                    count += 1
-        logging.info("   -> added articles: %d", count)
-
     def compute_bounds(self, runways_dict: typing.Dict[str, typing.List[Runway]]) -> None:
         logging.info("computing bounds of airports")
         for icao_code, airport in self._items.items():
