@@ -38,7 +38,8 @@ format:
 run: setup
 	PYTHONPATH=. .env/bin/python airports_bot/cli.py \
 		--config config.ini \
-		--verbose
+		--verbose \
+		--number 3
 
 .PHONY: run-reset
 run-reset: setup

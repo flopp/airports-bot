@@ -5,11 +5,13 @@ import typing
 
 import appdirs  # type: ignore
 from s2sphere import Angle, LatLngRect  # type: ignore
+import staticmapmaker
 import tweepy  # type: ignore
 
 from airports_bot.db import DB
 from airports_bot.airport import Airport
 from airports_bot.download import download
+from airports_bot.version import __user_agent__
 
 
 class Bot:
@@ -39,16 +41,20 @@ class Bot:
         assert bounds
         center = bounds.get_center()
         zoom = Bot.get_bounds_zoom(bounds, width, height)
-        url = (
-            "https://maps.googleapis.com/maps/api/staticmap"
-            + f"?center={center.lat().degrees},{center.lng().degrees}"
-            + f"&zoom={zoom}"
-            + f"&size={width}x{height}"
-            + "&maptype=satellite"
-            + f"&key={self._config['GOOGLE']['API_KEY']}"
-        )
+
+        tiles = staticmapmaker.default_tile_providers["arcgis-worldimagery"]
+        downloader = staticmapmaker.TileDownloader()
+        downloader.set_user_agent(__user_agent__)
+        context = staticmapmaker.Context()
+        context.set_zoom(zoom)
+        context.set_center(center)
+        context.set_tile_provider(tiles)
+        context.set_tile_downloader(downloader)
+        context.set_cache_dir(os.path.join(self._cache_dir, "tiles"))
+        image = context.render(width, height)
         image_file = os.path.join(self._cache_dir, f"{airport.icao_code()}-{width}x{height}.png")
-        download(url, image_file)
+        image.write_to_png(image_file)
+        #download(url, image_file)
         return image_file
 
     def prepare_tweet(self, airport: Airport) -> typing.Tuple[str, str]:
