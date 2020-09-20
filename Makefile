@@ -2,16 +2,15 @@
 setup:
 	python3 -m venv .env
 	.env/bin/pip install --upgrade pip
-	.env/bin/pip install -r requirements.txt
+	.env/bin/pip install --upgrade --requirement requirements.txt
 
 .PHONY: setup-dev
 setup-dev: setup
-	.env/bin/pip install -r requirements-dev.txt
+	.env/bin/pip install --upgrade --requirement requirements-dev.txt
 
 .PHONY: install
 install: setup
 	.env/bin/pip install .
-
 
 .PHONY: lint
 lint: mypy

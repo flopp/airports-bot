@@ -29,7 +29,7 @@ def main(airport_code: typing.List[str], config: str, number: int, reset: bool, 
                 continue
             airports.append(airport)
     else:
-        for n in range(number):
+        for _ in range(number):
             airports.append(bot.get_random_airport())
     for airport in airports:
         logging.info("=> %s", airport.fancy_name())

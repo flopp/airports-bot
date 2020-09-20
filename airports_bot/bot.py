@@ -5,12 +5,11 @@ import typing
 
 import appdirs  # type: ignore
 from s2sphere import Angle, LatLngRect  # type: ignore
-import staticmaps
+import staticmaps  # type: ignore
 import tweepy  # type: ignore
 
 from airports_bot.db import DB
 from airports_bot.airport import Airport
-from airports_bot.download import download
 from airports_bot.version import __user_agent__
 
 
@@ -41,8 +40,6 @@ class Bot:
         assert bounds
         center = bounds.get_center()
         zoom = Bot.get_bounds_zoom(bounds, width, height)
-
-        
         tiles = staticmaps.tile_provider_ArcGISWorldImagery
         downloader = staticmaps.TileDownloader()
         downloader.set_user_agent(__user_agent__)
@@ -52,7 +49,7 @@ class Bot:
         context.set_tile_provider(tiles)
         context.set_tile_downloader(downloader)
         context.set_cache_dir(os.path.join(self._cache_dir, "tiles"))
-        image = context.render(width, height)
+        image = context.render_cairo(width, height)
         image_file = os.path.join(self._cache_dir, f"{airport.icao_code()}-{width}x{height}.png")
         image.write_to_png(image_file)
         return image_file
