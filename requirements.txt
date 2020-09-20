@@ -1,7 +1,7 @@
 appdirs
 click
 pycountry
+py-staticmaps
 requests
 s2sphere
 tweepy
-git+https://github.com/flopp/staticmapmaker.git

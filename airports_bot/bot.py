@@ -5,7 +5,7 @@ import typing
 
 import appdirs  # type: ignore
 from s2sphere import Angle, LatLngRect  # type: ignore
-import staticmapmaker
+import staticmaps
 import tweepy  # type: ignore
 
 from airports_bot.db import DB
@@ -42,10 +42,11 @@ class Bot:
         center = bounds.get_center()
         zoom = Bot.get_bounds_zoom(bounds, width, height)
 
-        tiles = staticmapmaker.default_tile_providers["arcgis-worldimagery"]
-        downloader = staticmapmaker.TileDownloader()
+        
+        tiles = staticmaps.tile_provider_ArcGISWorldImagery
+        downloader = staticmaps.TileDownloader()
         downloader.set_user_agent(__user_agent__)
-        context = staticmapmaker.Context()
+        context = staticmaps.Context()
         context.set_zoom(zoom)
         context.set_center(center)
         context.set_tile_provider(tiles)
@@ -54,7 +55,6 @@ class Bot:
         image = context.render(width, height)
         image_file = os.path.join(self._cache_dir, f"{airport.icao_code()}-{width}x{height}.png")
         image.write_to_png(image_file)
-        #download(url, image_file)
         return image_file
 
     def prepare_tweet(self, airport: Airport) -> typing.Tuple[str, str]:
