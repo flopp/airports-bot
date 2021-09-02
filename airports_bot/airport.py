@@ -41,6 +41,7 @@ class Airport:
 
         self._latlng: typing.Optional[LatLng] = None
         self._bounds: typing.Optional[LatLngRect] = None
+        self._city = ""
         self._location = ""
         self._twitter = ""
 
@@ -58,7 +59,7 @@ class Airport:
         # self._continent = array[7]
         iso_country = array[8]
         # self._iso_region = array[9]
-        municipality = array[10]
+        self._city = array[10]
         # self._scheduled_service = array[11]
         # self._gps_code = array[12]
         self._iata_code = array[13].strip().upper()
@@ -77,7 +78,7 @@ class Airport:
             logging.warning("%s: unknown airport type: %s", self._icao_code, airport_type)
         self._latlng = LatLng.from_degrees(float(latitude_deg), float(longitude_deg))
         self._bounds = LatLngRect.from_point(self._latlng)
-        self._location = Airport.fancy_location(iso_country, municipality)
+        self._location = Airport.fancy_location(iso_country, self._city)
 
     def icao_code(self) -> str:
         return self._icao_code
@@ -96,6 +97,9 @@ class Airport:
 
     def bounds(self) -> typing.Optional[LatLngRect]:
         return self._bounds
+
+    def city(self) -> str:
+        return self._city
 
     def location(self) -> str:
         return self._location

@@ -60,6 +60,8 @@ class Bot:
             tags.append(f"#{airport.iata_code()}")
         if airport.twitter() != "":
             tags.append(airport.twitter())
+        if airport.city() != "":
+            tags.append(f"#{''.join(airport.city().split())}")
         tags.append("#airport")
         tags.append("#randomairport")
         tags.append("#aviation")
