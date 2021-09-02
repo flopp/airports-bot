@@ -42,6 +42,7 @@ class Airport:
         self._latlng: typing.Optional[LatLng] = None
         self._bounds: typing.Optional[LatLngRect] = None
         self._location = ""
+        self._twitter = ""
 
     def set_from_array(self, array: typing.List[typing.Any]) -> None:
         if len(array) != 18:
@@ -85,7 +86,7 @@ class Airport:
         return self._iata_code
 
     def matches_code(self, needle: str) -> bool:
-        return needle in self._icao_code or needle in self._iata_code
+        return needle == self._icao_code or needle == self._iata_code
 
     def fancy_name(self) -> str:
         code = self._icao_code
@@ -98,12 +99,20 @@ class Airport:
 
     def location(self) -> str:
         return self._location
+    
+    def twitter(self) -> str:
+        return self._twitter
+    
+    def set_twitter(self, s: str) -> None:
+        self._twitter = s
 
     @staticmethod
     def fancy_location(iso_country: str, city: str) -> str:
         country = None
         if iso_country in ["KS", "XK"]:
             country = "Kosovo"
+        elif iso_country in ["ZZ"]:
+            country = None
         else:
             country = pycountry.countries.get(alpha_2=iso_country).name
 

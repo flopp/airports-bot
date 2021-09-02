@@ -12,7 +12,6 @@ from airports_bot.db import DB
 from airports_bot.airport import Airport
 from airports_bot.version import __user_agent__
 
-
 class Bot:
     def __init__(self, config_file_name: str) -> None:
         self._db = DB()
@@ -59,6 +58,8 @@ class Bot:
         tags = [f"#{airport.icao_code()}"]
         if airport.iata_code() != "":
             tags.append(f"#{airport.iata_code()}")
+        if airport.twitter() != "":
+            tags.append(airport.twitter())
         tags.append("#airport")
         tags.append("#randomairport")
         tags.append("#aviation")

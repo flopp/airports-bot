@@ -7,7 +7,6 @@ from airports_bot.airportstable import AirportsTable
 from airports_bot.download import download
 from airports_bot.runwaystable import RunwaysTable
 
-
 class DB:
     def __init__(self) -> None:
         self._airports: typing.Dict[str, Airport] = {}
@@ -29,14 +28,6 @@ class DB:
         airports.check()
         for airport in airports.good_airports():
             self._airports[airport.icao_code()] = airport
-            if airport.airport_type() == AirportType.LARGE_AIRPORT:
-                self._large.append(airport.icao_code())
-            elif airport.airport_type() == AirportType.MEDIUM_AIRPORT:
-                self._medium.append(airport.icao_code())
-            elif airport.airport_type() == AirportType.SMALL_AIRPORT:
-                self._small.append(airport.icao_code())
-            else:
-                self._other.append(airport.icao_code())
 
     def get(self, icao: str) -> typing.Optional[Airport]:
         icao = icao.strip().upper()
@@ -46,10 +37,10 @@ class DB:
         return None
 
     def get_random(self) -> Airport:
-        if random.choice([True, False]):
+        if len(self._large) > 0 and random.choice([True, False]):
             return self._airports[random.choice(self._large)]
-        if random.choice([True, False]):
+        if len(self._medium) > 0 and random.choice([True, False]):
             return self._airports[random.choice(self._medium)]
-        if random.choice([True, False]):
+        if len(self._small) > 0 and random.choice([True, False]):
             return self._airports[random.choice(self._small)]
         return self._airports[random.choice(list(self._airports.keys()))]

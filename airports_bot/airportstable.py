@@ -4,7 +4,7 @@ import typing
 
 from airports_bot.airport import Airport, AirportType
 from airports_bot.runway import Runway
-
+from airports_bot.twitteraccounts import TwitterAccounts
 
 class AirportsTable:
     def __init__(self, file_name: str) -> None:
@@ -24,6 +24,10 @@ class AirportsTable:
                         self._items[airport.icao_code()] = airport
                     except IndexError as e:
                         logging.warning(repr(e))
+        
+        for _, airport in self._items.items():
+            if airport.iata_code() in TwitterAccounts:
+                airport.set_twitter(TwitterAccounts[airport.iata_code()])
 
     def compute_bounds(self, runways_dict: typing.Dict[str, typing.List[Runway]]) -> None:
         logging.info("computing bounds of airports")
@@ -46,5 +50,6 @@ class AirportsTable:
                 )
                 and not airport.empty_bounds()
                 and not airport.excessive_bounds()
+                and airport.twitter() != ""
             ):
                 yield airport
