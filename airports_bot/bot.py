@@ -22,6 +22,12 @@ class Bot:
         if "default" in self._config:
             if "CACHE_DIR" in self._config["default"]:
                 self._cache_dir = self._config["default"]["CACHE_DIR"]
+        self._last = []
+        self._lastFileName = os.path.join(self._cache_dir, "last.txt")
+        if os.path.isfile(self._lastFileName):
+            with open(self._lastFileName) as f:
+                for line in f:
+                    self._last.append(line.strip())
 
     def load_data(self, reset: bool) -> None:
         self._db.load(self._cache_dir, reset)
@@ -30,7 +36,13 @@ class Bot:
         return self._db.get(code)
 
     def get_random_airport(self) -> Airport:
-        return self._db.get_random()
+        airport = self._db.get_random(self._last)
+        self._last.append(airport.icao_code())
+        if len(self._last) >= self._db.count() // 2:
+            self._last.pop(0)
+        with open(self._lastFileName, "w") as f:
+            f.write("\n".join(self._last))
+        return airport
 
     def create_image(self, airport: Airport) -> str:
         width = 640

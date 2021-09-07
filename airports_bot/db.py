@@ -10,10 +10,6 @@ from airports_bot.runwaystable import RunwaysTable
 class DB:
     def __init__(self) -> None:
         self._airports: typing.Dict[str, Airport] = {}
-        self._large: typing.List[str] = []
-        self._medium: typing.List[str] = []
-        self._small: typing.List[str] = []
-        self._other: typing.List[str] = []
 
     def load(self, cache_dir: str, reset_cache: bool) -> None:
         airports_csv = os.path.join(cache_dir, "airports.csv")
@@ -28,6 +24,9 @@ class DB:
         airports.check()
         for airport in airports.good_airports():
             self._airports[airport.icao_code()] = airport
+    
+    def count(self) -> int:
+        return len(self._airports)
 
     def get(self, icao: str) -> typing.Optional[Airport]:
         icao = icao.strip().upper()
@@ -36,11 +35,10 @@ class DB:
                 return airport
         return None
 
-    def get_random(self) -> Airport:
-        if len(self._large) > 0 and random.choice([True, False]):
-            return self._airports[random.choice(self._large)]
-        if len(self._medium) > 0 and random.choice([True, False]):
-            return self._airports[random.choice(self._medium)]
-        if len(self._small) > 0 and random.choice([True, False]):
-            return self._airports[random.choice(self._small)]
-        return self._airports[random.choice(list(self._airports.keys()))]
+    def get_random(self, forbidden_keys: typing.List[str]) -> Airport:
+        key = None
+        while key is None:
+            key = random.choice(list(self._airports.keys()))
+            if key in forbidden_keys:
+                key = None
+        return self._airports[key]
