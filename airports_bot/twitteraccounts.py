@@ -38,7 +38,7 @@ TwitterAccounts = {
     "CHS": "@iflyCHS",
     "CLE": "@goingplacesCLE",
     "CLT": "@CLTAirport",
-    "CMH": "@columnbusairport",
+    "CMH": "@columbusairport",
     "COK": "@KochiAirport",
     "CPH": "@CPHAirports",
     "CPT": "@capetownint",
